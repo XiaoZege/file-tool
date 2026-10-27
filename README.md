@@ -1,5 +1,7 @@
 # file-tool
 
+[![CI](https://github.com/XiaoZege/file-tool/actions/workflows/ci.yaml/badge.svg)](https://github.com/XiaoZege/file-tool/actions/workflows/ci.yaml)
+
 一个用 Python 写的文件批处理小工具，练习项目。
 
 ## 快速开始
