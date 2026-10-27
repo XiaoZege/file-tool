@@ -14,9 +14,26 @@ uv run file-tool stats .
 
 | 命令 | 作用 | 状态 |
 |---|---|---|
-| `stats <目录>` | 按扩展名统计文件数量 | 已完成 |
-| `rename <目录> <旧> <新>` | 批量替换文件名中的字符串 | 待实现 |
-| `dedupe <csv> <列名>` | 按某列给 CSV 去重 | 待实现 |
+| `stats <目录>` | 按扩展名统计文件数量（递归，跳过 `.venv` 等目录） | 已完成 |
+| `rename <目录> <旧> <新>` | 批量替换同层文件名中的字符串 | 已完成 |
+| `dedupe <csv> <列名>` | 按某列给 CSV 去重，结果写回原文件 | 已完成 |
+
+### 例子
+
+```bash
+# 统计当前目录各类文件数量
+uv run file-tool stats .
+
+# 把 photos/ 下的 "IMG_" 全换成 "photo_"
+uv run file-tool rename ./photos "IMG_" "photo_"
+
+# people.csv 里 name 列重复的只保留第一行
+uv run file-tool dedupe people.csv name
+```
+
+## 测试
+
+9 个测试，覆盖正常路径和出错路径（目录不存在、列名不存在、改名目标已存在）。
 
 ## 开发
 
