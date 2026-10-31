@@ -16,7 +16,7 @@ def test_rename_replaces_in_file_names(tmp_path):
     assert (tmp_path / "report.md").exists()
     assert (tmp_path / "notes.md").exists()
     assert (tmp_path / "other.txt").exists()
-    assert "共改名 2 个文件" in result.stdout
+    assert "共处理 2 个文件" in result.stdout
 
 
 def test_rename_skips_when_target_exists(tmp_path):
@@ -36,3 +36,16 @@ def test_rename_rejects_missing_dir(tmp_path):
 
     assert result.exit_code == 1
     assert "不是目录" in result.stdout
+
+
+def test_rename_dry_run_does_not_touch_files(tmp_path):
+    (tmp_path / "old1.txt").write_text("")
+    (tmp_path / "old2.txt").write_text("")
+
+    result = runner.invoke(app, ["rename", str(tmp_path), "old", "new", "--dry-run"])
+
+    assert result.exit_code == 0
+    assert (tmp_path / "old1.txt").exists()
+    assert (tmp_path / "old2.txt").exists()
+    assert not (tmp_path / "new1.txt").exists()
+    assert "预览" in result.stdout

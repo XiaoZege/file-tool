@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+# 自己练手用的临时文件
+scratch/

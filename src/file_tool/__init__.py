@@ -11,7 +11,10 @@ SKIP_DIRS = {".git", ".venv", "__pycache__", "node_modules", ".idea"}
 
 
 @app.command()
-def stats(path: str = typer.Argument(".", help="要统计的目录")):
+def stats(
+    path: str = typer.Argument(".", help="要统计的目录"),
+    ext: str = typer.Option("", "--ext", help="只看这个后缀，比如 .py"),
+):
     """按扩展名统计文件数量。"""
     root = Path(path)
     if not root.is_dir():
@@ -27,6 +30,8 @@ def stats(path: str = typer.Argument(".", help="要统计的目录")):
         # 路径拆成一段一段，只要有任何一段是 .venv 这类目录就跳过
         if any(part in SKIP_DIRS for part in item.relative_to(root).parts):
             continue
+        if ext and item.suffix.lower() != ext:
+            continue
         suffix = item.suffix.lower() or "(无扩展名)"
         counter[suffix] += 1
         total += 1
@@ -40,7 +45,12 @@ def stats(path: str = typer.Argument(".", help="要统计的目录")):
 
 
 @app.command()
-def rename(directory: str, old: str, new: str):
+def rename(
+    directory: str,
+    old: str,
+    new: str,
+    dry_run: bool = typer.Option(False, "--dry-run", help="只预览，不真的改名"),
+):
     """批量把文件名里的 old 替换成 new。"""
     root = Path(directory)
     if not root.is_dir():
@@ -58,11 +68,15 @@ def rename(directory: str, old: str, new: str):
         if (root / new_name).exists():  # 目标已存在，不覆盖别人的文件
             typer.echo(f"跳过（已有同名文件）：{new_name}")
             continue
+        if dry_run:
+            typer.echo(f"{item.name} -> {new_name}（预览，没动文件）")
+            changed += 1
+            continue
         item.rename(root / new_name)  # 真正改名
         typer.echo(f"{item.name} -> {new_name}")
         changed += 1
 
-    typer.echo(f"共改名 {changed} 个文件")
+    typer.echo(f"共处理 {changed} 个文件")
 
 
 @app.command()
